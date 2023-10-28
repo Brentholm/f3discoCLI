@@ -26,11 +26,14 @@ int getch_noblock(void) {
     uint8_t receivedChar;
 
     if (HAL_UART_Receive(&huart1, &receivedChar, 1, 1) == HAL_OK) {
-        // A character has been received and stored in 'receivedChar'
+        //echo it out
+    	HAL_UART_Transmit(&huart1,&receivedChar, 1, 1);
+    	// A character has been received and stored in 'receivedChar'
+
         return receivedChar;
     } else {
         // No character received within the timeout period
-        return EOF;
+        return 0xFFFFFFFF;  //this seems to match the EOF that ConsoleIOReceive is looking for.
     }
 }
 
@@ -38,13 +41,13 @@ eConsoleError ConsoleIoInit(void)
 {
 	return CONSOLE_SUCCESS;
 }
-eConsoleError ConsoleIoReceive(uint8_t *buffer, const uint32_t bufferLength, uint32_t *readLength)
+/*eConsoleError ConsoleIoReceive(uint8_t *buffer, const uint32_t bufferLength, uint32_t *readLength)
 {
 	uint32_t i = 0;
 	char ch;
 	
 	ch = getch_noblock();
-	while ( ( EOF != ch ) && ( i < bufferLength ) )
+	while ( ( EOF != (uint8_t)ch ) && ( i < bufferLength ) )
 	{
 		buffer[i] = (uint8_t) ch;
 		i++;
@@ -52,6 +55,31 @@ eConsoleError ConsoleIoReceive(uint8_t *buffer, const uint32_t bufferLength, uin
 	}
 	*readLength = i;
 	return CONSOLE_SUCCESS;
+}*/
+
+eConsoleError ConsoleIoReceive(uint8_t* buffer, const uint32_t bufferLength, uint32_t *readLength)
+{
+    uint32_t i = 0;
+    uint8_t rxByte = 0;
+
+
+ while (HAL_UART_GetState(&huart1) != HAL_UART_STATE_READY);
+
+ if (HAL_OK != HAL_UART_Receive(&huart1, &rxByte, 1, HAL_MAX_DELAY))
+ {
+  return CONSOLE_ERROR;
+ }
+
+ /* Send echo */
+ HAL_UART_Transmit(&huart1, (uint8_t*)&rxByte, 1, HAL_MAX_DELAY);
+
+ buffer[i] = rxByte;
+ i++;
+
+
+ *readLength = i;
+
+ return CONSOLE_SUCCESS;
 }
 
 eConsoleError ConsoleIoSendString(const char *buffer)
