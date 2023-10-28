@@ -21,8 +21,8 @@
 #include "i2c.h"
 #include "spi.h"
 #include "usart.h"
-#include "usb.h"
 #include "gpio.h"
+#include "console.h"  //for the cmd line interface
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -58,6 +58,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void USART1_SendString(const char* str);
 int __io_putchar(int ch);
+int __io_getchar(int ch);
 int my_getchar(void);
 /* USER CODE END PFP */
 
@@ -96,7 +97,7 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
-  MX_USB_PCD_Init();
+  //MX_USB_PCD_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   LedRoseSet();
@@ -113,14 +114,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+	  /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+	  /* USER CODE BEGIN 3 */
 	  //Call my_getchar to read characters interactively
-	  int ch;
-	  while ((ch = my_getchar()) != EOF) {
-		  __io_putchar(ch); // Print the character received
+	  //int ch;
+	  //while ((ch = my_getchar()) != EOF) {
+	  //  __io_putchar(ch); // Print the character received
+	  ConsoleInit();
+
+	  while(1)
+	  {
+		  ConsoleProcess();
 	  }
+
   }
   /* USER CODE END 3 */
 }
@@ -200,15 +207,19 @@ int __io_putchar(int ch){
 	return 1;
 }
 
+/*
 int __io_getchar(void){
 	int c;
 	HAL_UART_Receive(&huart1, (uint8_t*)&c, 1, 0xFFFF);
 	return c;
 }
+*/
 
-int my_getchar(void) {
+
+
+/*int my_getchar(void) {
 	      return __io_getchar();
-	  }
+	  }*/
 /* USER CODE END 4 */
 
 /**
