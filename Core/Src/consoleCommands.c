@@ -19,6 +19,9 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[]);
 static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleInt16(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[]);
+static eCommandResult_T ConsoleCommandReadAccelX(const char buffer[]);
+static eCommandResult_T ConsoleCommandReadAccelY(const char buffer[]);
+static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[]);
 
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
@@ -27,6 +30,9 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
     {"int", &ConsoleCommandParamExampleInt16, HELP("How to get a signed int16 from params list: int -321")},
     {"u16h", &ConsoleCommandParamExampleHexUint16, HELP("How to get a hex u16 from the params list: u16h aB12")},
+	{"acx" , &ConsoleCommandReadAccelX, HELP("Reports the current Acceleration (x-direction) in milli-g")},
+	{"acy" , &ConsoleCommandReadAccelY, HELP("Reports the current Acceleration (y-direction) in milli-g")},
+	{"acz" , &ConsoleCommandReadAccelZ, HELP("Reports the current Acceleration (z-direction) in milli-g")},
 
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
@@ -100,7 +106,35 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[])
 	return result;
 }
 
+static eCommandResult_T ConsoleCommandReadAccelX(const char buffer[])
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
 
+	IGNORE_UNUSED_VARIABLE(buffer);
+	ConsoleIoSendString("x = 1");
+	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
+
+static eCommandResult_T ConsoleCommandReadAccelY(const char buffer[])
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+
+	IGNORE_UNUSED_VARIABLE(buffer);
+	ConsoleIoSendString("y = 2");
+	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
+
+static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[])
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+
+	IGNORE_UNUSED_VARIABLE(buffer);
+	ConsoleIoSendString("z = 3 ");
+	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
 const sConsoleCommandTable_T* ConsoleCommandsGetTable(void)
 {
 	return (mConsoleCommandTable);
