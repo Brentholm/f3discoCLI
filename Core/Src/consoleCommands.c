@@ -11,6 +11,7 @@
 #include "console.h"
 #include "consoleIo.h"
 #include "version.h"
+#include "LedRelated.h"
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -22,6 +23,8 @@ static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[])
 static eCommandResult_T ConsoleCommandReadAccelX(const char buffer[]);
 static eCommandResult_T ConsoleCommandReadAccelY(const char buffer[]);
 static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[]);
+static eCommandResult_T ConsoleCommandLedsRose(const char buffer[]);
+static eCommandResult_T ConsoleCommandButtonState(const char buffer[]);
 
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
@@ -33,7 +36,8 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"acx" , &ConsoleCommandReadAccelX, HELP("Reports the current Acceleration (x-direction) in milli-g")},
 	{"acy" , &ConsoleCommandReadAccelY, HELP("Reports the current Acceleration (y-direction) in milli-g")},
 	{"acz" , &ConsoleCommandReadAccelZ, HELP("Reports the current Acceleration (z-direction) in milli-g")},
-
+	{"leds" ,&ConsoleCommandLedsRose, HELP("Briefly flashes the 8 LEDs to show they are working")},
+	{"buts",&ConsoleCommandButtonState, HELP("Prints the present state of the Blue user button")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
@@ -135,6 +139,37 @@ static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[])
 	ConsoleIoSendString(STR_ENDLINE);
 	return result;
 }
+
+static eCommandResult_T ConsoleCommandLedsRose(const char buffer[])
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+
+	IGNORE_UNUSED_VARIABLE(buffer);
+	ConsoleIoSendString("LEDs should light in a circular pattern and then extinguish the same way ");
+	LedRoseSet();
+	HAL_Delay(50);
+	LedRoseToggle();
+	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
+
+
+static eCommandResult_T ConsoleCommandButtonState(const char buffer[])
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+
+	IGNORE_UNUSED_VARIABLE(buffer);
+	ConsoleIoSendString("the present state of the Blue user button is: ");
+	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)) {
+		ConsoleIoSendString("DOWN, Depressed ");
+	}
+	else {
+		ConsoleIoSendString("UP, Unpressed ");
+	}
+	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
+
 const sConsoleCommandTable_T* ConsoleCommandsGetTable(void)
 {
 	return (mConsoleCommandTable);
