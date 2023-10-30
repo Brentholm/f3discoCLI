@@ -5,7 +5,7 @@ making embedded systems command line interface project
 ### Brent Holm     
 
 
-Overview: Used CubeMX to create a basic project for my board, the STM32F3Discovery. Turned on USART1 because it's wired to the Virtual COM port on the built-in debugger on the board. Pulled in command line interface files from [eleciawhite](https://github.dev/eleciawhite/reusable/tree/master/source)
+Overview: Used CubeMX to create a basic project for my board, the STM32F3Discovery. Turned on USART1 because it's wired to the Virtual COM port on the built-in debugger on the board. Pulled in command line interface files from [eleciawhite/reusable](https://github.dev/eleciawhite/reusable/tree/master/source)
 
 The main edits to port the CLI to the STM32 platform went in to:  
 eConsoleError ConsoleIoReceive(uint8_t* buffer, const uint32_t bufferLength, uint32_t *readLength) 
