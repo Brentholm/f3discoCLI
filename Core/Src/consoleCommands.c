@@ -102,9 +102,7 @@ static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[])
 static eCommandResult_T ConsoleCommandVer(const char buffer[])
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
-
     IGNORE_UNUSED_VARIABLE(buffer);
-
 	ConsoleIoSendString(VERSION_STRING);
 	ConsoleIoSendString(STR_ENDLINE);
 	return result;
@@ -113,7 +111,6 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[])
 static eCommandResult_T ConsoleCommandReadAccelX(const char buffer[])
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
-
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("x = 1");
 	ConsoleIoSendString(STR_ENDLINE);
@@ -123,7 +120,6 @@ static eCommandResult_T ConsoleCommandReadAccelX(const char buffer[])
 static eCommandResult_T ConsoleCommandReadAccelY(const char buffer[])
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
-
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("y = 2");
 	ConsoleIoSendString(STR_ENDLINE);
@@ -133,7 +129,6 @@ static eCommandResult_T ConsoleCommandReadAccelY(const char buffer[])
 static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[])
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
-
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("z = 3 ");
 	ConsoleIoSendString(STR_ENDLINE);
@@ -143,7 +138,6 @@ static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[])
 static eCommandResult_T ConsoleCommandLedsRose(const char buffer[])
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
-
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("LEDs should light in a circular pattern and then extinguish the same way ");
 	LedRoseSet();
@@ -157,7 +151,6 @@ static eCommandResult_T ConsoleCommandLedsRose(const char buffer[])
 static eCommandResult_T ConsoleCommandButtonState(const char buffer[])
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
-
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("the present state of the Blue user button is: ");
 	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)) {
