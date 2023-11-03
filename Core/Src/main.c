@@ -23,6 +23,8 @@
 #include "usart.h"
 #include "gpio.h"
 #include "console.h"  //for the cmd line interface
+#include "stm32f3_discovery_accelerometer.h"
+
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -107,6 +109,11 @@ int main(void)
 
   USART1_SendString("Hello, World!\r\n");
   printf("Hi Brent\r\n");
+
+  BSP_ACCELERO_Init();
+
+  int16_t* pAccelData;
+  BSP_ACCELERO_GetXYZ(pAccelData);
 
   /* USER CODE END 2 */
 
