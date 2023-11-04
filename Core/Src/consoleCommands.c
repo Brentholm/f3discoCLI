@@ -12,6 +12,7 @@
 #include "consoleIo.h"
 #include "version.h"
 #include "LedRelated.h"
+#include "stm32f3_discovery_accelerometer.h"
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -23,6 +24,7 @@ static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[])
 static eCommandResult_T ConsoleCommandReadAccelX(const char buffer[]);
 static eCommandResult_T ConsoleCommandReadAccelY(const char buffer[]);
 static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[]);
+static eCommandResult_T ConsoleCommandReadAccel(const char buffer[]);
 static eCommandResult_T ConsoleCommandLedsRose(const char buffer[]);
 static eCommandResult_T ConsoleCommandButtonState(const char buffer[]);
 
@@ -36,6 +38,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"acx" , &ConsoleCommandReadAccelX, HELP("Reports the current Acceleration (x-direction) in milli-g")},
 	{"acy" , &ConsoleCommandReadAccelY, HELP("Reports the current Acceleration (y-direction) in milli-g")},
 	{"acz" , &ConsoleCommandReadAccelZ, HELP("Reports the current Acceleration (z-direction) in milli-g")},
+	{"acc" , &ConsoleCommandReadAccel, HELP("reports the current 3 axis acceleration")},
 	{"leds" ,&ConsoleCommandLedsRose, HELP("Briefly flashes the 8 LEDs to show they are working")},
 	{"buts",&ConsoleCommandButtonState, HELP("Prints the present state of the Blue user button")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
@@ -131,6 +134,22 @@ static eCommandResult_T ConsoleCommandReadAccelZ(const char buffer[])
 	eCommandResult_T result = COMMAND_SUCCESS;
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("z = 3 ");
+	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
+
+static eCommandResult_T ConsoleCommandReadAccel(const char buffer[])
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+	IGNORE_UNUSED_VARIABLE(buffer);
+	int16_t accelData[3] = {0};
+	BSP_ACCELERO_GetXYZ(accelData);
+	ConsoleIoSendString("x accel = ");
+	ConsoleSendParamInt16(accelData[0]);
+	ConsoleIoSendString("    y accel = ");
+	ConsoleSendParamInt16(accelData[1]);
+	ConsoleIoSendString("    z accel = ");
+	ConsoleSendParamInt16(accelData[2]);
 	ConsoleIoSendString(STR_ENDLINE);
 	return result;
 }

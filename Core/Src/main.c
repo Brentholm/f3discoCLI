@@ -112,8 +112,8 @@ int main(void)
 
   BSP_ACCELERO_Init();
 
-  int16_t* pAccelData;
-  BSP_ACCELERO_GetXYZ(pAccelData);
+  int16_t accelData[3] = {0};
+  BSP_ACCELERO_GetXYZ(accelData);
 
   /* USER CODE END 2 */
 
