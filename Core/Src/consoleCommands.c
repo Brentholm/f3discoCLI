@@ -148,7 +148,7 @@ static eCommandResult_T ConsoleCommandReadAccel(const char buffer[])
 	ConsoleSendParamInt16(accelData[0]);
 	ConsoleIoSendString("    y accel = ");
 	ConsoleSendParamInt16(accelData[1]);
-	ConsoleIoSendString("    z accel = ");
+	ConsoleIoSendString("    ACCZ accel = ");
 	ConsoleSendParamInt16(accelData[2]);
 	ConsoleIoSendString(STR_ENDLINE);
 	return result;
@@ -159,10 +159,10 @@ static eCommandResult_T ConsoleCommandLedsRose(const char buffer[])
 	eCommandResult_T result = COMMAND_SUCCESS;
 	IGNORE_UNUSED_VARIABLE(buffer);
 	ConsoleIoSendString("LEDs should light in a circular pattern and then extinguish the same way ");
+	ConsoleIoSendString(STR_ENDLINE);
 	LedRoseSet();
 	HAL_Delay(50);
 	LedRoseToggle();
-	ConsoleIoSendString(STR_ENDLINE);
 	return result;
 }
 
