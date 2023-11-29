@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "LedRelated.h"
+#include <stdlib.h>  //for malloc
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,10 +63,17 @@ void USART1_SendString(const char* str);
 int __io_putchar(int ch);
 int __io_getchar(int ch);
 int my_getchar(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// for printing out address of an initialized global variable
+  uint32_t globalVarInit= 0x0ba10ba1;
+
+// for printing out address of an uninitialized global variable
+   uint32_t globalVar;
 
 /* USER CODE END 0 */
 
@@ -108,7 +116,83 @@ int main(void)
 
 
   USART1_SendString("Hello, World!\r\n");
-  printf("Hi Brent\r\n");
+  //printf("Hi Brent\r\n");
+
+  printf("\r\n");
+  // the following bunch of hacking is for Homework #8
+  // 1. Print out the stack pointer
+  // Credit to https://github.com/dslik/red-jellies/tree/main/lesson-8
+
+  printf(" The stack pointer can be accessed from the ARM r13 register \r\n");
+  printf(" 1. define a volatile uint32_t to hold the value of the stack pointer \r\n");
+  printf(" 2. use an assembly instruction to move MCU register R13 \r\n");
+  printf("    in to the variable known as stackPointer \r\n");
+  printf(" 3. Now printf can be used to print out the value in stackPointer\r\n");
+  printf("    that is: 'stackPointer' contains R13, the Stack Pointer \r\n");
+
+  volatile uint32_t stackPointer;
+  __asm__ volatile ("mov %0, r13;" : "=r"(stackPointer));  //now stackPointer will contain R13, i.e. the Cortex M Stack Pointer
+  //printf("   Stack pointer, format specifier  X:          0x%08X\r\n", (uint32_t) stackPointer);
+  //printf("   Stack pointer, format specifier lux:          0x%08lux\r\n", (uint32_t) stackPointer);
+  printf("   Stack pointer:               0x%08lX\r\n", (uint32_t) stackPointer);
+  printf("\r\n");
+  //printf("   Stack pointer, format specifier  i:          0x%08i\r\n", (uint32_t) stackPointer);
+
+  /*//for checking out the heap pointer- malloc something but do it outside any functions
+  	uint32_t* hp;
+  	hp = malloc(sizeof(uint32_t));
+  	// Store a value in the allocated memory
+  	*hp = 12345;
+  	// Print the value to the console
+  	printf("   first Heap from malloc:       0x%08lX\r\n", (uint32_t) &hp);
+
+  	// Free the allocated memory
+  	free(hp);*/
+
+
+// to inspect the heap pointer, malloc something
+  printf("for the Heap pointer, declare a local variable and print its address out \r\n");
+
+  void foo(void){
+	  uint32_t bar;
+	  printf("   Heap pointer:                0x%08lX\r\n", (uint32_t) &bar);
+
+	  uint32_t *p;
+	  // Allocate memory for a single uint32
+	  p = malloc(sizeof(uint32_t));
+	  // Store a value in the allocated memory
+	  *p = 12345;
+      // Print the value to the console
+	  printf("   Heap from malloc:            0x%08lX\r\n", (uint32_t) &p);
+
+	  // Free the allocated memory
+	  free(p);
+	  return;
+  }
+
+  //call foo so that it's actually used in code and will print :
+  foo();
+  printf("\r\n");
+
+  printf("   Initialized global:          0x%08lX\r\n", (uint32_t) &globalVarInit);
+
+
+  printf("   Un-initialized global:       0x%08lX\r\n", (uint32_t) &globalVar);
+
+  // print out address of a static variable and another variable inside a function
+  void foo2(void){
+  	  static uint32_t staticVar;
+  	  uint32_t varInFunc = 1;
+  	  printf("   Static local:                0x%08lX\r\n", (uint32_t) &staticVar);
+  	  printf("   Var in a Function:           0x%08lX\r\n", (uint32_t) &varInFunc);
+  	  return;
+    }
+
+  // call the second function:
+  foo2();
+  printf("\r\n");
+
+
 
   BSP_ACCELERO_Init();
 
@@ -128,6 +212,11 @@ int main(void)
 	  //int ch;
 	  //while ((ch = my_getchar()) != EOF) {
 	  //  __io_putchar(ch); // Print the character received
+
+
+
+
+
 	  ConsoleInit();
 
 	  while(1)
@@ -136,8 +225,9 @@ int main(void)
 	  }
 
   }
-  /* USER CODE END 3 */
 }
+  /* USER CODE END 3 */
+
 
 /**
   * @brief System Clock Configuration
@@ -214,6 +304,7 @@ int __io_putchar(int ch){
 	return 1;
 }
 
+
 /*
 int __io_getchar(void){
 	int c;
@@ -221,6 +312,7 @@ int __io_getchar(void){
 	return c;
 }
 */
+
 
 
 
