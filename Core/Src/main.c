@@ -22,10 +22,6 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
-#include "console.h"  //for the cmd line interface
-#include "stm32f3_discovery_accelerometer.h"
-
-
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -33,6 +29,9 @@
 #include <string.h>
 #include "LedRelated.h"
 #include <stdlib.h>  //for malloc
+#include "console.h"  //for the cmd line interface
+#include "stm32f3_discovery_accelerometer.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,7 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t rx_buffer[10];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,6 +63,8 @@ int __io_putchar(int ch);
 int __io_getchar(int ch);
 int my_getchar(void);
 
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -72,9 +73,15 @@ int my_getchar(void);
 // for printing out address of an initialized global variable
   uint32_t globalVarInit= 0x0ba10ba1;
 
+
 // for printing out address of an uninitialized global variable
    uint32_t globalVar;
+   uint8_t rxbuff[4];						  // create a small buffer for keyboard entry
 
+   void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart){
+	   HAL_UART_Transmit(&huart1, rxbuff,1,200);    // echo the character just received
+	   HAL_UART_Receive_IT(&huart1, rxbuff,1);      // re-enable the UART receiver in interrupt mode for the next character
+  }
 /* USER CODE END 0 */
 
 /**
@@ -93,7 +100,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  //HAL_UART_Register_Callback(&huart1, HAL_UART_RX_, ByteReceivedUart1);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -107,9 +114,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
-  //MX_USB_PCD_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  //MX_NVIC_Init();
   LedRoseSet();
   HAL_Delay(50);
   LedRoseToggle();
@@ -136,18 +143,6 @@ int main(void)
   //printf("   Stack pointer, format specifier lux:          0x%08lux\r\n", (uint32_t) stackPointer);
   printf("   Stack pointer:               0x%08lX\r\n", (uint32_t) stackPointer);
   printf("\r\n");
-  //printf("   Stack pointer, format specifier  i:          0x%08i\r\n", (uint32_t) stackPointer);
-
-  /*//for checking out the heap pointer- malloc something but do it outside any functions
-  	uint32_t* hp;
-  	hp = malloc(sizeof(uint32_t));
-  	// Store a value in the allocated memory
-  	*hp = 12345;
-  	// Print the value to the console
-  	printf("   first Heap from malloc:       0x%08lX\r\n", (uint32_t) &hp);
-
-  	// Free the allocated memory
-  	free(hp);*/
 
 
 // to inspect the heap pointer, malloc something
@@ -194,6 +189,8 @@ int main(void)
 
 
 
+
+  HAL_UART_Receive_IT(&huart1, rxbuff,1);    // turn on the UART in interrupt mode:
   BSP_ACCELERO_Init();
 
   int16_t accelData[3] = {0};
@@ -205,9 +202,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-	  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
 	  //Call my_getchar to read characters interactively
 	  //int ch;
 	  //while ((ch = my_getchar()) != EOF) {
@@ -215,19 +212,19 @@ int main(void)
 
 
 
-
-
-	  ConsoleInit();
+// enable interrupts for USART1
+	  //HAL_UART_Receive_IT(&huart1,);
+	  //ConsoleInit();
 
 	  while(1)
 	  {
-		  ConsoleProcess();
+		  //ConsoleProcess();
 	  }
 
   }
-}
-  /* USER CODE END 3 */
 
+  /* USER CODE END 3 */
+}
 
 /**
   * @brief System Clock Configuration
@@ -268,11 +265,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_I2C1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
-  PeriphClkInit.USBClockSelection = RCC_USBCLKSOURCE_PLL;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -319,6 +314,11 @@ int __io_getchar(void){
 /*int my_getchar(void) {
 	      return __io_getchar();
 	  }*/
+void customRcvComplete_CB(UART_HandleTypeDef* huart){
+	HAL_UART_Transmit(&huart1, (uint8_t*) "hi", 4, 300);
+}
+
+
 /* USER CODE END 4 */
 
 /**
