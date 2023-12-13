@@ -52,7 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t rx_buffer[10];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,12 +76,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 // for printing out address of an uninitialized global variable
    uint32_t globalVar;
-   uint8_t rxbuff[4];						  // create a small buffer for keyboard entry
 
-   void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart){
-	   HAL_UART_Transmit(&huart1, rxbuff,1,200);    // echo the character just received
-	   HAL_UART_Receive_IT(&huart1, rxbuff,1);      // re-enable the UART receiver in interrupt mode for the next character
-  }
 /* USER CODE END 0 */
 
 /**
@@ -187,10 +182,6 @@ int main(void)
   foo2();
   printf("\r\n");
 
-
-
-
-  HAL_UART_Receive_IT(&huart1, rxbuff,1);    // turn on the UART in interrupt mode:
   BSP_ACCELERO_Init();
 
   int16_t accelData[3] = {0};
@@ -214,11 +205,11 @@ int main(void)
 
 // enable interrupts for USART1
 	  //HAL_UART_Receive_IT(&huart1,);
-	  //ConsoleInit();
+	  ConsoleInit();
 
 	  while(1)
 	  {
-		  //ConsoleProcess();
+		  ConsoleProcess();
 	  }
 
   }
